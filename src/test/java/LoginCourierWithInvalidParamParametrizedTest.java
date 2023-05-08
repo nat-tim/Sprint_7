@@ -1,3 +1,6 @@
+import ObjectApi.Courier;
+import ObjectApi.CourierForDel;
+import StepApi.CourierApi;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.After;
@@ -8,7 +11,6 @@ import org.junit.runners.Parameterized;
 
 import java.io.File;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(Parameterized.class)
@@ -35,12 +37,7 @@ public class LoginCourierWithInvalidParamParametrizedTest {
         RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
         //создаем пользователя, чтоб залогиниться
         File json = new File("src/test/resources/newCourier.json");
-        given()
-                .header("Content-type", "application/json")
-                .and()
-                .body(json)
-                .when()
-                .post("/api/v1/courier")
+        CourierApi.createCourier(json)
                 .then().assertThat().statusCode(201);
     }
 
@@ -48,12 +45,7 @@ public class LoginCourierWithInvalidParamParametrizedTest {
     public void loginCourierWithInvalidParam(){
         Courier courier = new Courier(login, password);
         //система вернёт ошибку, если неправильно указать логин или пароль; если авторизоваться под несуществующим пользователем, запрос возвращает ошибку;
-        given()
-                .header("Content-type", "application/json")
-                .and()
-                .body(courier)
-                .when()
-                .post("/api/v1/courier/login")
+        CourierApi.loginCourier(courier)
                 .then().assertThat().statusCode(404)
                 .and()
                 .assertThat().body("message", equalTo("Учетная запись не найдена"));
@@ -65,24 +57,11 @@ public class LoginCourierWithInvalidParamParametrizedTest {
         //удаляем пользователя
         File json = new File("src/test/resources/courier.json");
         //узнаем id
-        Response response = given()
-                .header("Content-type", "application/json")
-                .and()
-                .body(json)
-                .when()
-                .post("/api/v1/courier/login")
-                .then().extract().response();
+        Response response = CourierApi.loginCourier(json);
         response.then().assertThat().statusCode(200);
         CourierForDel courier = response.body().as(CourierForDel.class);
 
-        //удаляем
-        given()
-                .header("Content-type", "application/json")
-                .and()
-                .when()
-                .delete("/api/v1/courier/" + courier.getId())
-                .then().assertThat().statusCode(200);
-
+        CourierApi.deleteCourier(courier.getId());
 
     }
 }

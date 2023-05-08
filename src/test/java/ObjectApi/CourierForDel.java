@@ -1,24 +1,13 @@
-public class Courier {
+package ObjectApi;
+
+public class CourierForDel {
     private String login;
     private String password;
     private String firstName;
+    private String id;
 
-
-    public Courier(String login, String password, String firstName) {
-
-    this.login = login;
-    this.password = password;
-    this.firstName = firstName;
-    }
-    public Courier(String login, String password) {
-
-        this.login = login;
-        this.password = password;
-        this.firstName = null;
-    }
-
-    public Courier() {
-
+    public String getId() {
+        return id;
     }
 
     public String getLogin() {
@@ -39,6 +28,9 @@ public class Courier {
         this.login = login;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -47,7 +39,5 @@ public class Courier {
     public void setPassword(String password) {
         this.password = password;
     }
-
-
 
 }

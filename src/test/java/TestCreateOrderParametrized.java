@@ -1,19 +1,13 @@
+import ObjectApi.Order;
+import StepApi.OrderApi;
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
 
 @RunWith(Parameterized.class)
 public class TestCreateOrderParametrized {
@@ -67,17 +61,8 @@ public class TestCreateOrderParametrized {
         Order order = new Order(firstName, lastName, address, metroStation, phone, rentTime, deliveryDate,
                 comment, color);
         //система вернёт ошибку, если неправильно указать логин или пароль; если авторизоваться под несуществующим пользователем, запрос возвращает ошибку;
-        given()
-                .header("Content-type", "application/json")
-                .and()
-                .body(order)
-                .when()
-                .post("/api/v1/orders")
-                .then().assertThat().statusCode(201)
-                .and()
-                .assertThat().body("track", notNullValue());
+        OrderApi.createOrder(order);
 
     }
-
 
 }

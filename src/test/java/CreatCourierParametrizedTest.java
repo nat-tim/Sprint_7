@@ -1,11 +1,12 @@
+import ObjectApi.Courier;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-
-import static io.restassured.RestAssured.given;
+import static StepApi.CourierApi.createCourier;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(Parameterized.class)
@@ -37,12 +38,8 @@ public class CreatCourierParametrizedTest {
     public void createNewCourierWithoutOneParam(){
         //чтобы создать курьера, нужно передать в ручку все обязательные поля;если одного из полей нет, запрос возвращает ошибку;
         Courier courier = new Courier(login, password, firstName);
-        given()
-                .header("Content-type", "application/json")
-                .and()
-                .body(courier)
-                .when()
-                .post("/api/v1/courier")
+        Response response = createCourier(courier);
+        response
                 .then().assertThat().statusCode(400)
                 .and()
                 .assertThat().body("message", equalTo("Недостаточно данных для создания учетной записи"));

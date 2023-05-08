@@ -1,3 +1,5 @@
+import ObjectApi.CourierForDel;
+import StepApi.CourierApi;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.After;
@@ -6,7 +8,6 @@ import org.junit.Test;
 
 import java.io.File;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 public class TestCreateCourier {
@@ -20,13 +21,8 @@ public class TestCreateCourier {
     public void createNewCourier(){
         File json = new File("src/test/resources/newCourier.json");
         //курьера можно создать; запрос возвращает правильный код ответа;успешный запрос возвращает ok: true;
-        given()
-                .header("Content-type", "application/json")
-                .and()
-                .body(json)
-                .when()
-                .post("/api/v1/courier")
-                .then().assertThat().statusCode(201)
+        Response response = CourierApi.createCourier(json);
+        response.then().assertThat().statusCode(201)
                 .and()
                 .assertThat().body("ok", equalTo(true));
 
@@ -36,22 +32,12 @@ public class TestCreateCourier {
     public void notBeTwoTwinsCourier(){
         File json = new File("src/test/resources/newCourier.json");
         //нельзя создать двух одинаковых курьеров; если создать пользователя с логином, который уже есть, возвращается ошибка.
-        given()
-                .header("Content-type", "application/json")
-                .and()
-                .body(json)
-                .when()
-                .post("/api/v1/courier")
-                .then().assertThat().statusCode(201)
+        Response response = CourierApi.createCourier(json);
+        response.then().assertThat().statusCode(201)
                 .and()
                 .assertThat().body("ok", equalTo(true));
-        given()
-                .header("Content-type", "application/json")
-                .and()
-                .body(json)
-                .when()
-                .post("/api/v1/courier")
-                .then().assertThat().statusCode(409)
+        Response response1 = CourierApi.createCourier(json);
+        response1.then().assertThat().statusCode(409)
                 .and()
                 .assertThat().body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
     }
@@ -60,23 +46,11 @@ public class TestCreateCourier {
     public void cleanUp() {
         File json = new File("src/test/resources/courier.json");
         //delete created courier
-        Response response = given()
-                .header("Content-type", "application/json")
-                .and()
-                .body(json)
-                .when()
-                .post("/api/v1/courier/login")
-                .then().extract().response();
+        Response response = CourierApi.loginCourier(json);
                 response.then().assertThat().statusCode(200);
         CourierForDel courier = response.body().as(CourierForDel.class);
 
-
-        given()
-                .header("Content-type", "application/json")
-                .and()
-                .when()
-                .delete("/api/v1/courier/" + courier.getId())
-                .then().assertThat().statusCode(200);
+        CourierApi.deleteCourier(courier.getId());
 
 
     }
