@@ -1,12 +1,10 @@
+package object_api;
+
 public class CourierForDel {
     private String login;
     private String password;
     private String firstName;
     private String id;
-
-
-
-
 
     public String getId() {
         return id;
@@ -23,7 +21,6 @@ public class CourierForDel {
     public String getFirstName() {
         return firstName;
     }
-
 
 
     public void setLogin(String login) {
